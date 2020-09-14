@@ -54,5 +54,5 @@ app.get("/decrement", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json(JSON.stringify({ error: error }));
     }
 }));
-const port = 5000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => `Server running on port ${port}`);
