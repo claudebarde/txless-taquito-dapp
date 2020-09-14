@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const taquito_1 = require("@taquito/taquito");
 const signer_1 = require("@taquito/signer");
+const path_1 = __importDefault(require("path"));
 const faucet_1 = __importDefault(require("./faucet"));
 const app = express_1.default();
 const contractAddress = "KT1Pdsb8cUZkXGxVaXCzo9DntriCEYdG9gWT";
@@ -22,6 +23,8 @@ taquito_1.Tezos.setProvider({
     rpc: "https://carthagenet.smartpy.io",
     signer: new signer_1.InMemorySigner(faucet_1.default.sk)
 });
+// Serve the static files from the React app
+app.use(express_1.default.static(path_1.default.join(__dirname, "client/build")));
 app.get("/storage", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contract = yield taquito_1.Tezos.contract.at(contractAddress);
     const storage = yield contract.storage();

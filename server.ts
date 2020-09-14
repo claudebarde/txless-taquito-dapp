@@ -1,6 +1,7 @@
 import express from "express";
 import { Tezos } from "@taquito/taquito";
 import { InMemorySigner } from "@taquito/signer";
+import path from "path";
 import faucet from "./faucet";
 
 const app = express();
@@ -10,6 +11,9 @@ Tezos.setProvider({
   rpc: "https://carthagenet.smartpy.io",
   signer: new InMemorySigner(faucet.sk)
 });
+
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, "client/build")));
 
 app.get("/storage", async (req, res) => {
   const contract = await Tezos.contract.at(contractAddress);
