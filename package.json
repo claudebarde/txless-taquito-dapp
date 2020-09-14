@@ -4,7 +4,7 @@
   "description": "Walletless demo dapp for user interactions without a wallet",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "ts-node dist/server.js",
     "server": "nodemon dist/server.js",
     "client": "cd client && npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\" \"tsc -w\""
@@ -20,6 +20,7 @@
     "@taquito/signer": "^6.3.5-beta.0",
     "@taquito/taquito": "^6.3.5-beta.0",
     "concurrently": "^3.5.1",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "ts-node": "^9.0.0"
   }
 }
