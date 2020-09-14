@@ -14,6 +14,7 @@ const App = () => {
     try {
       const res = await fetch("/increment");
       const data = JSON.parse(await res.json());
+      console.log({ data });
       if (data.opHash) {
         // hash is returned after first confirmation
         setStorage(storage + 1);
@@ -36,6 +37,7 @@ const App = () => {
     try {
       const res = await fetch("/decrement");
       const data = JSON.parse(await res.json());
+      console.log({ data });
       if (data.opHash) {
         // hash is returned after first confirmation
         setStorage(storage - 1);
