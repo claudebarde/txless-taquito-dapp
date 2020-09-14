@@ -27,5 +27,29 @@ app.get("/storage", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const storage = yield contract.storage();
     res.json(JSON.stringify({ storage }));
 }));
+app.get("/increment", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const contract = yield taquito_1.Tezos.contract.at(contractAddress);
+        const op = yield contract.methods.increment(1).send();
+        yield op.confirmation();
+        res.json(JSON.stringify({ opHash: op.hash }));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json(JSON.stringify({ error: error }));
+    }
+}));
+app.get("/decrement", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const contract = yield taquito_1.Tezos.contract.at(contractAddress);
+        const op = yield contract.methods.decrement(1).send();
+        yield op.confirmation();
+        res.json(JSON.stringify({ opHash: op.hash }));
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json(JSON.stringify({ error: error }));
+    }
+}));
 const port = 5000;
 app.listen(port, () => `Server running on port ${port}`);

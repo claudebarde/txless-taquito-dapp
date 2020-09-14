@@ -17,6 +17,30 @@ app.get("/storage", async (req, res) => {
   res.json(JSON.stringify({ storage }));
 });
 
+app.get("/increment", async (req, res) => {
+  try {
+    const contract = await Tezos.contract.at(contractAddress);
+    const op = await contract.methods.increment(1).send();
+    await op.confirmation();
+    res.json(JSON.stringify({ opHash: op.hash }));
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(JSON.stringify({ error: error }));
+  }
+});
+
+app.get("/decrement", async (req, res) => {
+  try {
+    const contract = await Tezos.contract.at(contractAddress);
+    const op = await contract.methods.decrement(1).send();
+    await op.confirmation();
+    res.json(JSON.stringify({ opHash: op.hash }));
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(JSON.stringify({ error: error }));
+  }
+});
+
 const port = 5000;
 
 app.listen(port, () => `Server running on port ${port}`);

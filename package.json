@@ -7,7 +7,7 @@
     "start": "tsc && node dist/server.js",
     "server": "nodemon dist/server.js",
     "client": "cd client && npm run start",
-    "dev": "tsc && concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"tsc -w\""
   },
   "author": "Claude Barde",
   "license": "MIT",
