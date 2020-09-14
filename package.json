@@ -4,7 +4,7 @@
   "description": "Walletless demo dapp for user interactions without a wallet",
   "main": "dist/server.js",
   "scripts": {
-    "start": "tsc && node dist/server.js",
+    "start": "node dist/server.js",
     "server": "nodemon dist/server.js",
     "client": "cd client && npm run start",
     "dev": "concurrently \"npm run server\" \"npm run client\" \"tsc -w\""
