@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   RpcClient,
-  OperationContentsTransaction,
+  OperationObject,
   OpKind,
   MichelsonV1Expression
 } from "@taquito/rpc";
@@ -15,7 +15,10 @@ const App = () => {
   const [opHash, setOpHash] = useState<string>();
   const [incrementValue, setIncrementValue] = useState<number>(0);
   const [decrementValue, setDecrementValue] = useState<number>(0);
-  const [client, setClient] = useState<RpcClient>();
+  const [client, setClient]: [
+    RpcClient,
+    React.Dispatch<React.SetStateAction<RpcClient>>
+  ] = useState<RpcClient>();
   const [pkh, setPkh] = useState<string>();
   const [signer, setSigner] = useState();
 
@@ -68,22 +71,26 @@ const App = () => {
 
   const signIncrement = async () => {
     console.log(signer);
-    const txData: OperationContentsTransaction = {
-      kind: OpKind.TRANSACTION,
-      source: pkh ? pkh : "",
-      fee: "300000",
-      counter: "",
-      gas_limit: "219104",
-      storage_limit: "0",
-      amount: "0",
-      destination: contractAddress,
-      parameters: {
-        entrypoint: "increment",
-        value: `{"prim": "int", "args": [${incrementValue}}]` as MichelsonV1Expression
-      }
+    const txData: OperationObject = {
+      contents: [
+        {
+          kind: OpKind.TRANSACTION,
+          source: pkh ? pkh : "",
+          fee: "300000",
+          counter: "",
+          gas_limit: "219104",
+          storage_limit: "0",
+          amount: "0",
+          destination: contractAddress,
+          parameters: {
+            entrypoint: "increment",
+            value: `{"prim": "int", "args": [${incrementValue}}]` as MichelsonV1Expression
+          }
+        }
+      ]
     };
-    //const op = await client.forgeOperations(txData);
-    const op = await client?.preapplyOperations([txData]);
+    const op = await client.forgeOperations(txData);
+    //const op = await client.preapplyOperations(txData);
     console.log(op);
   };
 
