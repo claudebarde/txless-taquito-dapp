@@ -83,7 +83,7 @@ const App = () => {
       }
     };
     //const op = await client.forgeOperations(txData);
-    const op = await client.preapplyOperations([txData]);
+    const op = await client?.preapplyOperations([txData]);
     console.log(op);
   };
 
