@@ -70,7 +70,7 @@ const App = () => {
     console.log(signer);
     const txData: OperationContentsTransaction = {
       kind: OpKind.TRANSACTION,
-      source: pkh,
+      source: pkh ? pkh : "",
       fee: "300000",
       counter: "",
       gas_limit: "219104",
