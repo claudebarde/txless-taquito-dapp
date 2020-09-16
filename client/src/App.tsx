@@ -71,27 +71,29 @@ const App = () => {
 
   const signIncrement = async () => {
     console.log(signer);
-    const txData: OperationObject = {
-      contents: [
-        {
-          kind: OpKind.TRANSACTION,
-          source: pkh ? pkh : "",
-          fee: "300000",
-          counter: "",
-          gas_limit: "219104",
-          storage_limit: "0",
-          amount: "0",
-          destination: contractAddress,
-          parameters: {
-            entrypoint: "increment",
-            value: `{"prim": "int", "args": [${incrementValue}}]` as MichelsonV1Expression
+    if (pkh && client) {
+      const txData: OperationObject = {
+        contents: [
+          {
+            kind: OpKind.TRANSACTION,
+            source: pkh,
+            fee: "300000",
+            counter: "",
+            gas_limit: "219104",
+            storage_limit: "0",
+            amount: "0",
+            destination: contractAddress,
+            parameters: {
+              entrypoint: "increment",
+              value: `{"prim": "int", "args": [${incrementValue}}]` as MichelsonV1Expression
+            }
           }
-        }
-      ]
-    };
-    const op = await client.forgeOperations(txData);
-    //const op = await client.preapplyOperations(txData);
-    console.log(op);
+        ]
+      };
+      const op = await client.forgeOperations(txData);
+      //const op = await client.preapplyOperations(txData);
+      console.log(op);
+    }
   };
 
   useEffect(() => {
