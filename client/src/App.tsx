@@ -17,7 +17,7 @@ const App = () => {
   const [decrementValue, setDecrementValue] = useState<number>(0);
   const [client, setClient]: [
     RpcClient | undefined,
-    React.Dispatch<React.SetStateAction<RpcClient>>
+    React.Dispatch<React.SetStateAction<RpcClient | undefined>>
   ] = useState<RpcClient>();
   const [pkh, setPkh] = useState<string>();
   const [signer, setSigner] = useState();
