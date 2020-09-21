@@ -1,14 +1,16 @@
 import express from "express";
 import { Tezos } from "@taquito/taquito";
 import { InMemorySigner } from "@taquito/signer";
+import { RpcClient } from "@taquito/rpc";
 import path from "path";
 import faucet from "./faucet";
 
 const app = express();
 
 const contractAddress = "KT1Pdsb8cUZkXGxVaXCzo9DntriCEYdG9gWT";
+const rpcUrl = "https://testnet-tezos.giganode.io";
 Tezos.setProvider({
-  rpc: "https://carthagenet.smartpy.io",
+  rpc: rpcUrl,
   signer: new InMemorySigner(faucet.sk)
 });
 
@@ -42,6 +44,20 @@ app.get("/decrement", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json(JSON.stringify({ error: error }));
+  }
+});
+
+app.get("/broadcast", async (req, res) => {
+  try {
+    const { op, sig } = req.query;
+    const client = new RpcClient(rpcUrl);
+    const opID = await client.injectOperation(sig as string);
+    if (opID) {
+      res.status(200).send(JSON.stringify({ opHash: opID }));
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(JSON.stringify(error));
   }
 });
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   RpcClient,
-  OperationObject,
+  ForgeOperationsParams,
   OpKind,
   MichelsonV1Expression
 } from "@taquito/rpc";
@@ -23,6 +23,7 @@ const App = () => {
   const [signer, setSigner] = useState();
 
   const contractAddress = "KT1Pdsb8cUZkXGxVaXCzo9DntriCEYdG9gWT";
+  const rpcUrl = "https://testnet-tezos.giganode.io";
 
   const increment = async () => {
     // increments the storage by 1
@@ -70,36 +71,58 @@ const App = () => {
   };
 
   const signIncrement = async () => {
-    console.log(signer);
     if (pkh && client) {
-      const txData: OperationObject = {
-        contents: [
-          {
-            kind: OpKind.TRANSACTION,
-            source: pkh,
-            fee: "300000",
-            counter: "",
-            gas_limit: "219104",
-            storage_limit: "0",
-            amount: "0",
-            destination: contractAddress,
-            parameters: {
-              entrypoint: "increment",
-              value: `{"prim": "int", "args": [${incrementValue}}]` as MichelsonV1Expression
+      // gets operation counter for address
+      const req = await fetch(
+        `${rpcUrl}/chains/main/blocks/head/context/contracts/${pkh}/counter`
+      );
+      if (req) {
+        let counter = await req.json();
+        counter = (+counter + 1).toString();
+        // forges the operation
+        const blockHash = await client.getBlockHash();
+        const value: MichelsonV1Expression = { int: incrementValue.toString() };
+        const txData: ForgeOperationsParams = {
+          branch: blockHash,
+          contents: [
+            {
+              kind: OpKind.TRANSACTION,
+              source: pkh,
+              fee: "300000",
+              counter,
+              gas_limit: "219104",
+              storage_limit: "30000",
+              amount: "0",
+              destination: contractAddress,
+              parameters: {
+                entrypoint: "increment",
+                value
+              }
             }
-          }
-        ]
-      };
-      const op = await client.forgeOperations(txData);
-      //const op = await client.preapplyOperations(txData);
-      console.log(op);
+          ]
+        };
+        const opBytes = await client.forgeOperations(txData);
+        //console.log(opBytes);
+        // signs the operation bytes
+        const signature = await signer.sign(opBytes);
+        const response = await fetch(
+          `/broadcast?op="inc"&sig=${signature.sbytes}`
+        );
+        const data = await response.json();
+        if (response.status === 200) {
+          console.log(data.opHash);
+          setOpHash(data.opHash);
+        } else {
+          console.error(data);
+        }
+      }
     }
   };
 
   useEffect(() => {
     (async () => {
       // sets up the RPC client
-      const client = new RpcClient("https://testnet-tezos.giganode.io");
+      const client = new RpcClient(rpcUrl);
       setClient(client);
       // sets up the signer
       const signer = new TezBridgeSigner();

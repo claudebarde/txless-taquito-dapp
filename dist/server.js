@@ -15,12 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const taquito_1 = require("@taquito/taquito");
 const signer_1 = require("@taquito/signer");
+const rpc_1 = require("@taquito/rpc");
 const path_1 = __importDefault(require("path"));
 const faucet_1 = __importDefault(require("./faucet"));
 const app = express_1.default();
 const contractAddress = "KT1Pdsb8cUZkXGxVaXCzo9DntriCEYdG9gWT";
+const rpcUrl = "https://testnet-tezos.giganode.io";
 taquito_1.Tezos.setProvider({
-    rpc: "https://carthagenet.smartpy.io",
+    rpc: rpcUrl,
     signer: new signer_1.InMemorySigner(faucet_1.default.sk)
 });
 // Serve the static files from the React app
@@ -52,6 +54,20 @@ app.get("/decrement", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     catch (error) {
         console.log(error);
         res.status(500).json(JSON.stringify({ error: error }));
+    }
+}));
+app.get("/broadcast", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { op, sig } = req.query;
+        const client = new rpc_1.RpcClient(rpcUrl);
+        const opID = yield client.injectOperation(sig);
+        if (opID) {
+            res.status(200).send(JSON.stringify({ opHash: opID }));
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).send(JSON.stringify(error));
     }
 }));
 const port = process.env.PORT || 5000;

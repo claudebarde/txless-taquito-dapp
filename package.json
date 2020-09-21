@@ -17,6 +17,7 @@
     "nodemon": "^1.14.6"
   },
   "dependencies": {
+    "@taquito/rpc": "^6.3.5-beta.0",
     "@taquito/signer": "^6.3.5-beta.0",
     "@taquito/taquito": "^6.3.5-beta.0",
     "concurrently": "^3.5.1",
